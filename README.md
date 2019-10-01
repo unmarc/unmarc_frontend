@@ -2,15 +2,12 @@
 
 Use `yarn` instead of `npm`
 
-### Setup
+## Setup
 `yarn install` to install dependencies
 
--------------
 
-### Run
+## Run
 
-`yarn start` to start development server
+`yarn start` to start dev server (Ensure `unmarc_backend` is running and listening on port `8000`)
 
 `yarn test` to run tests
-
-etc.
