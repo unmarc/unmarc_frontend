@@ -1,23 +1,29 @@
-import React from 'react';
-import { connect } from "react-redux";
+import React, { useState } from 'react';
 
 import Login from './Login'
-import { setAuthToken } from './ducks'
+import authService from './authService'
 
 
-function AuthCheck(props) {
-  const isLoggedIn = Boolean(props.authToken)
+export function Auth(props) {
+  const [isLoggedIn, setIsLoggedIn] = useState(authService.userIsLoggedIn)
 
-  const unsetAuthToken = () => {
-    props.setAuthToken(undefined)
+  const resetAuthState = () => {
+    authService.stopTokenRefreshService()
+    authService.clearTokens()
+    setIsLoggedIn(false)
+  }
+
+  const handleSuccessfulLogin = () => {
+    if (!authService.tokenRefreshServiceIsRunning) {
+      authService.runTokenRefreshService()
+    }
+    setIsLoggedIn(true)
   }
 
   if (isLoggedIn) {
     return (
       <div>
-        <button
-          onClick={ unsetAuthToken }
-        >
+        <button onClick={ resetAuthState }>
           Log Out
         </button>
         { props.children }
@@ -25,14 +31,8 @@ function AuthCheck(props) {
     )
   }
 
-  return <Login/>
+  return <Login onSuccess={ handleSuccessfulLogin }/>
 }
-
-const mapStateToProps = state => ({
-  authToken: state.auth.user.authToken,
-});
-
-export const Auth = connect(mapStateToProps, { setAuthToken })(AuthCheck)
 
 /*
 function withAuth(WrappedComponent) {

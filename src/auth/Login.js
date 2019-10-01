@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import { connect } from "react-redux";
-import { Mutation } from 'react-apollo'
+import React, { useState } from 'react'
 import gql from 'graphql-tag'
-import { setAuthToken } from './ducks'
+import { Mutation } from 'react-apollo'
+import authService from './authService'
 
 
 const LOGIN_MUTATION = gql`
-  mutation LoginMutation($username: String!, $password: String!) {
+  mutation TokenAuth($username: String!, $password: String!) {
     tokenAuth(username: $username, password: $password) {
       token
+      refreshToken
     }
   }
 `
 
-function Login(props) {
+export default function Login(props) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const saveToken = async data => {
-    const { token } = data.tokenAuth
-    props.setAuthToken(token)
+  const saveToken = data => {
+    authService.updateTokens(data.tokenAuth.token, data.tokenAuth.refreshToken)
+    props.onSuccess()
   }
 
   return (
@@ -48,5 +48,3 @@ function Login(props) {
     </div>
   )
 }
-
-export default connect(null, { setAuthToken })(Login)
