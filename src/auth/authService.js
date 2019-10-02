@@ -4,6 +4,7 @@ import { from } from 'apollo-link'
 import gql from 'graphql-tag'
 import { parseJwt } from './jwtDecode'
 import { csrfHeaderLink, httpLink } from '../common/apolloLinks'
+import { tokenExpiryNegativeOffset, refreshTokenCheckInterval } from '../common/constants'
 
 
 export const authContext = (function() {
@@ -47,12 +48,12 @@ class AuthService {
     this.stopTokenRefreshService = this.stopTokenRefreshService.bind(this)
   }
 
-  get userIsLoggedIn() {
-    return authContext.hasTokens
-  }
-
   updateTokens(aToken, rToken) {
     authContext.setTokens(aToken, rToken)
+  }
+
+  get userIsLoggedIn() {
+    return authContext.hasTokens
   }
 
   clearTokens() {
@@ -61,8 +62,8 @@ class AuthService {
     authContext.setTokens(undefined, undefined)
   }
 
-  tokenNeedsRefresh(aToken) {
-    return Date.now() >= (parseJwt(aToken).exp * 1000) - 30000
+  tokenNeedsRefresh(aToken, expiryOffset=tokenExpiryNegativeOffset) {
+    return Date.now() >= (parseJwt(aToken).exp * 1000) - expiryOffset
   }
 
   refreshTokenIfExpired() {
@@ -88,16 +89,16 @@ class AuthService {
     return Boolean(this.refreshIntervalVar)
   }
 
-  runTokenRefreshService() {
-    if (!authContext.hasTokens)
-      throw Error('runTokenRefreshService called before authContext initialisation')
+  runTokenRefreshService(refreshCheckInterval=refreshTokenCheckInterval) {
+    if (!this.userIsLoggedIn)
+      throw Error('runTokenRefreshService called when user not logged in')
 
     if (this.tokenRefreshServiceIsRunning) {
       console.warn('runTokenRefreshService called when already running. Ignoring this call...')
       return
     }
 
-    this.refreshIntervalVar = setInterval(this.refreshTokenIfExpired, 5000)
+    this.refreshIntervalVar = setInterval(this.refreshTokenIfExpired, refreshCheckInterval)
   }
 
   stopTokenRefreshService() {
