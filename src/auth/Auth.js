@@ -8,15 +8,12 @@ export function Auth(props) {
   const [isLoggedIn, setIsLoggedIn] = useState(authService.userIsLoggedIn)
 
   const resetAuthState = () => {
-    authService.stopTokenRefreshService()
-    authService.clearTokens()
+    authService.reset()
     setIsLoggedIn(false)
   }
 
-  const handleSuccessfulLogin = () => {
-    if (!authService.tokenRefreshServiceIsRunning) {
-      authService.runTokenRefreshService()
-    }
+  const handleSuccessfulLogin = ({ token, refreshToken }) => {
+    authService.init(token, refreshToken)
     setIsLoggedIn(true)
   }
 
@@ -33,6 +30,9 @@ export function Auth(props) {
 
   return <Login onSuccess={ handleSuccessfulLogin }/>
 }
+
+
+
 
 /*
 function withAuth(WrappedComponent) {

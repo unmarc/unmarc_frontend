@@ -2,9 +2,8 @@ import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { from } from 'apollo-link'
 import gql from 'graphql-tag'
-import { parseJwt } from './jwtDecode'
 import { csrfHeaderLink, httpLink } from '../common/apolloLinks'
-import { tokenExpiryNegativeOffset, refreshTokenCheckInterval } from '../common/constants'
+import { tokenRefreshDelta } from '../common/constants'
 
 
 export const authContext = (function() {
@@ -33,19 +32,28 @@ const REFRESH_TOKEN_MUTATION = gql`
     refreshToken(refreshToken: $refreshToken) {
       token
       refreshToken
-      payload
     }
   }
 `
 
 class AuthService {
   constructor() {
-    this.refreshIntervalVar = undefined
-    this.tokenNeedsRefresh = this.tokenNeedsRefresh.bind(this)
+    this.timerID = null
+    this.clearTokens = this.clearTokens.bind(this)
     this.updateTokens = this.updateTokens.bind(this)
-    this.refreshTokenIfExpired = this.refreshTokenIfExpired.bind(this)
+    this.refreshAuthTokens = this.refreshAuthTokens.bind(this)
     this.runTokenRefreshService = this.runTokenRefreshService.bind(this)
     this.stopTokenRefreshService = this.stopTokenRefreshService.bind(this)
+  }
+
+  init(aToken, rToken) {
+    this.updateTokens(aToken, rToken)
+    this.runTokenRefreshService()
+  }
+
+  reset() {
+    this.stopTokenRefreshService()
+    this.clearTokens()
   }
 
   updateTokens(aToken, rToken) {
@@ -62,34 +70,25 @@ class AuthService {
     authContext.setTokens(undefined, undefined)
   }
 
-  tokenNeedsRefresh(aToken, expiryOffset=tokenExpiryNegativeOffset) {
-    return Date.now() >= (parseJwt(aToken).exp * 1000) - expiryOffset
-  }
-
-  refreshTokenIfExpired() {
-    if (this.tokenNeedsRefresh(authContext.accessToken)) {
-      client.mutate({
-        mutation: REFRESH_TOKEN_MUTATION,
-        fetchPolicy: 'no-cache',
-        variables: { refreshToken: authContext.refreshToken }
-      })
-      .then(({ data }) => {
-        this.updateTokens(
-          data.refreshToken.token,
-          data.refreshToken.refreshToken
-        )
-      })
-      .catch(error => {
-        console.error(error)
-      })
-    }
+  refreshAuthTokens() {
+    client.mutate({
+      mutation: REFRESH_TOKEN_MUTATION,
+      fetchPolicy: 'no-cache',
+      variables: { refreshToken: authContext.refreshToken }
+    })
+    .then(({ data }) => {
+      this.updateTokens(data.refreshToken.token, data.refreshToken.refreshToken)
+    })
+    .catch(error => {
+      console.error(error)
+    })
   }
 
   get tokenRefreshServiceIsRunning() {
-    return Boolean(this.refreshIntervalVar)
+    return Boolean(this.timerID)
   }
 
-  runTokenRefreshService(refreshCheckInterval=refreshTokenCheckInterval) {
+  runTokenRefreshService(refreshDelay=tokenRefreshDelta) {
     if (!this.userIsLoggedIn)
       throw Error('runTokenRefreshService called when user not logged in')
 
@@ -98,12 +97,12 @@ class AuthService {
       return
     }
 
-    this.refreshIntervalVar = setInterval(this.refreshTokenIfExpired, refreshCheckInterval)
+    this.timerID = setInterval(this.refreshAuthTokens, refreshDelay)
   }
 
   stopTokenRefreshService() {
-    clearInterval(this.refreshIntervalVar)
-    this.refreshIntervalVar = undefined
+    clearInterval(this.timerID)
+    this.timerID = null
   }
 }
 

@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import gql from 'graphql-tag'
 import { Mutation } from 'react-apollo'
-import authService from './authService'
 
 
 const LOGIN_MUTATION = gql`
@@ -16,11 +15,6 @@ const LOGIN_MUTATION = gql`
 export default function Login(props) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-
-  const saveToken = data => {
-    authService.updateTokens(data.tokenAuth.token, data.tokenAuth.refreshToken)
-    props.onSuccess()
-  }
 
   return (
     <div>
@@ -40,7 +34,7 @@ export default function Login(props) {
         <Mutation
           mutation={ LOGIN_MUTATION }
           variables={ { username, password } }
-          onCompleted={ data => saveToken(data) }
+          onCompleted={ data => props.onSuccess(data.tokenAuth) }
         >
           { mutation => <button onClick={ mutation }>Log In</button> }
         </Mutation>

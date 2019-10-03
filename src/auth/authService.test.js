@@ -49,29 +49,11 @@ describe("authService", () => {
     authService.stopTokenRefreshService()
   })
 
-  it('tokenNeedsRefresh returns false if expiry far off', () => {
-    let token = jwt.sign({
-        exp: Math.floor(Date.now() / 1000) + 60, // expire 1 minute from now
-        data: 'foobar'
-      }, 'secret'
-    )
-    assert.isFalse(authService.tokenNeedsRefresh(token, 30000), 'no refresh needed')
-  })
-
-  it('tokenNeedsRefresh returns true if expiry coming up soon (within offset)', () => {
-    let token = jwt.sign({
-        exp: Math.floor(Date.now() / 1000) + 20, // expire 20 seconds from now
-        data: 'foobar'
-      }, 'secret'
-    )
-    assert.isTrue(authService.tokenNeedsRefresh(token, 30000), 'refresh needed')
-  })
-
   it('tokenRefreshServiceIsRunning reports status accurately', () => {
-    assert.isUndefined(authService.refreshIntervalVar)
-    assert.isFalse(authService.tokenRefreshServiceIsRunning, 'false when refreshIntervalVar is unset')
-    authService.refreshIntervalVar = 1
-    assert.isTrue(authService.tokenRefreshServiceIsRunning, 'true when refreshIntervalVar is set')
+    assert.isNull(authService.timerID)
+    assert.isFalse(authService.tokenRefreshServiceIsRunning, 'false when timerID is unset')
+    authService.timerID = 1
+    assert.isTrue(authService.tokenRefreshServiceIsRunning, 'true when timerID is set')
   })
 
   it('runTokenRefreshService throws error if called when user is not logged in', () => {
@@ -105,7 +87,7 @@ describe("authService", () => {
     authService.runTokenRefreshService()
     authService.stopTokenRefreshService()
     assert.isFalse(authService.tokenRefreshServiceIsRunning)
-    assert.isUndefined(authService.refreshIntervalVar)
+    assert.isNull(authService.timerID)
   })
 
 })
