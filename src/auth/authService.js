@@ -36,6 +36,14 @@ const REFRESH_TOKEN_MUTATION = gql`
   }
 `
 
+const REVOKE_TOKEN_MUTATION = gql`
+  mutation RevokeToken($refreshToken: String!) {
+    revokeToken(refreshToken: $refreshToken) {
+      revoked
+    }
+  }
+`
+
 class AuthService {
   constructor() {
     this.timerID = null
@@ -81,6 +89,13 @@ class AuthService {
     })
     .catch(error => {
       console.error(error)
+    })
+  }
+
+  revokeToken() {
+    client.mutate({
+      mutation: REVOKE_TOKEN_MUTATION,
+      variables: { refreshToken: authContext.refreshToken }
     })
   }
 

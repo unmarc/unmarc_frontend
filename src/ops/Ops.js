@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 
-import { Auth } from '../auth/'
+import { AuthCheck } from '../auth/'
 
 
 const TP_QUERY = gql`
@@ -17,7 +17,7 @@ const TP_QUERY = gql`
 
 function Ops() {
   return (
-    <Auth>
+    <AuthCheck>
       <div>
         <h1>Staff Operations</h1>
         <Query query={ TP_QUERY } fetchPolicy='no-cache'>
@@ -36,7 +36,7 @@ function Ops() {
         </Query>
         <Link to='/'>Home</Link>
       </div>
-    </Auth>
+    </AuthCheck>
   )
 }
 

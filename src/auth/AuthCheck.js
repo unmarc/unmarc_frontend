@@ -4,10 +4,11 @@ import Login from './Login'
 import authService from './authService'
 
 
-export function Auth(props) {
+export function AuthCheck(props) {
   const [isLoggedIn, setIsLoggedIn] = useState(authService.userIsLoggedIn)
 
-  const resetAuthState = () => {
+  const logout = () => {
+    authService.revokeToken()
     authService.reset()
     setIsLoggedIn(false)
   }
@@ -20,7 +21,7 @@ export function Auth(props) {
   if (isLoggedIn) {
     return (
       <div>
-        <button onClick={ resetAuthState }>
+        <button onClick={ logout }>
           Log Out
         </button>
         { props.children }
@@ -36,9 +37,9 @@ export function Auth(props) {
 
 /*
 function withAuth(WrappedComponent) {
-  const AuthWrapper = () => <Auth children={ <WrappedComponent/> }/>
+  const AuthWrapper = () => <AuthCheck children={ <WrappedComponent/> }/>
   return AuthWrapper
 }
 
-export { withAuth, Auth }
+export { withAuth, AuthCheck }
 */
