@@ -35,6 +35,7 @@ export default function Login(props) {
           mutation={ LOGIN_MUTATION }
           variables={ { username, password } }
           onCompleted={ data => props.onSuccess(data.tokenAuth) }
+          onError={ error => alert(error.graphQLErrors[0].message) }
         >
           { mutation => <button onClick={ mutation }>Log In</button> }
         </Mutation>
