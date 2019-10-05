@@ -5,9 +5,15 @@ import { authContext } from '../auth/authService'
 
 
 export const httpLink = createHttpLink({
-  uri: '/graphql',
+  uri: '/gql-pub',
   credentials: 'same-origin'
 })
+
+export const staffHttpLink = createHttpLink({
+  uri: '/gql-pvt',
+  credentials: 'same-origin'
+})
+
 
 export const csrfHeaderLink = setContext((_, { headers }) => {
   return {

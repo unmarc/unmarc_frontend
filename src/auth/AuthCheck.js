@@ -8,13 +8,11 @@ export function AuthCheck(props) {
   const [isLoggedIn, setIsLoggedIn] = useState(authService.userIsLoggedIn)
 
   const logout = () => {
-    authService.revokeToken()
-    authService.reset()
+    authService.logout()
     setIsLoggedIn(false)
   }
 
-  const handleSuccessfulLogin = ({ token, refreshToken }) => {
-    authService.init(token, refreshToken)
+  const handleSuccessfulLogin = _ => {
     setIsLoggedIn(true)
   }
 

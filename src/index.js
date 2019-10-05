@@ -8,7 +8,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 
 import './index.css'
 import App from './unmarc'
-import { httpLink, csrfHeaderLink, authLink } from './common/apolloLinks'
+import { staffHttpLink, csrfHeaderLink, authLink } from './common/apolloLinks'
 
 
 // This endpoint sets CSRF cookie in the browser
@@ -17,16 +17,16 @@ fetch('/_h', { method: 'HEAD' })
 
 
 const client = new ApolloClient({
-  link: from([csrfHeaderLink, authLink, httpLink]),
+  link: from([csrfHeaderLink, authLink, staffHttpLink]),
   cache: new InMemoryCache(),
 })
 
 
 ReactDOM.render(
-  <BrowserRouter>
-    <ApolloProvider client={ client }>
+  <ApolloProvider client={ client }>
+    <BrowserRouter>
       <App/>
-    </ApolloProvider>
-  </BrowserRouter>
+    </BrowserRouter>
+  </ApolloProvider>
   , document.getElementById('root')
 );

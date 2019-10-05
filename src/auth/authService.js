@@ -22,10 +22,14 @@ export const authContext = (function() {
   }
 })()
 
-const client = new ApolloClient({
-  link: from([csrfHeaderLink, httpLink]),
-  cache: new InMemoryCache(),
-})
+const LOGIN_MUTATION = gql`
+  mutation TokenAuth($username: String!, $password: String!) {
+    tokenAuth(username: $username, password: $password) {
+      token
+      refreshToken
+    }
+  }
+`
 
 const REFRESH_TOKEN_MUTATION = gql`
   mutation RefreshToken($refreshToken: String!) {
@@ -47,6 +51,10 @@ const REVOKE_TOKEN_MUTATION = gql`
 class AuthService {
   constructor() {
     this.timerID = null
+    this.authClient = new ApolloClient({
+      link: from([csrfHeaderLink, httpLink]),
+      cache: new InMemoryCache(),
+    })
     this.clearTokens = this.clearTokens.bind(this)
     this.updateTokens = this.updateTokens.bind(this)
     this.refreshAuthTokens = this.refreshAuthTokens.bind(this)
@@ -59,9 +67,30 @@ class AuthService {
     this.runTokenRefreshService()
   }
 
+  login(username, password, successCallback, errCallback) {
+    this.authClient.mutate({
+      mutation: LOGIN_MUTATION,
+      fetchPolicy: 'no-cache',
+      variables: { username, password }
+    })
+      .then(({ data }) => {
+        this.init(data.tokenAuth.token, data.tokenAuth.refreshToken)
+        successCallback()
+      })
+      .catch(error => {
+        errCallback(error)
+      })
+  }
+
+  logout() {
+    this.revokeToken()
+    this.reset()
+  }
+
   reset() {
     this.stopTokenRefreshService()
     this.clearTokens()
+    this.authClient.resetStore()
   }
 
   updateTokens(aToken, rToken) {
@@ -79,7 +108,7 @@ class AuthService {
   }
 
   refreshAuthTokens() {
-    client.mutate({
+    this.authClient.mutate({
       mutation: REFRESH_TOKEN_MUTATION,
       fetchPolicy: 'no-cache',
       variables: { refreshToken: authContext.refreshToken }
@@ -93,7 +122,7 @@ class AuthService {
   }
 
   revokeToken() {
-    client.mutate({
+    this.authClient.mutate({
       mutation: REVOKE_TOKEN_MUTATION,
       variables: { refreshToken: authContext.refreshToken }
     })

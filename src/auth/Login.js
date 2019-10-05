@@ -1,20 +1,14 @@
 import React, { useState } from 'react'
-import gql from 'graphql-tag'
-import { Mutation } from 'react-apollo'
+import authService from './authService'
 
-
-const LOGIN_MUTATION = gql`
-  mutation TokenAuth($username: String!, $password: String!) {
-    tokenAuth(username: $username, password: $password) {
-      token
-      refreshToken
-    }
-  }
-`
 
 export default function Login(props) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+
+  const login = () => {
+    authService.login(username, password, props.onSuccess, alert)
+  }
 
   return (
     <div>
@@ -30,16 +24,7 @@ export default function Login(props) {
           placeholder="Password: "
         />
       </div>
-      <div>
-        <Mutation
-          mutation={ LOGIN_MUTATION }
-          variables={ { username, password } }
-          onCompleted={ data => props.onSuccess(data.tokenAuth) }
-          onError={ error => alert(error.graphQLErrors[0].message) }
-        >
-          { mutation => <button onClick={ mutation }>Log In</button> }
-        </Mutation>
-      </div>
+      <button onClick={ login }>Log In</button>
     </div>
   )
 }
