@@ -1,2 +1,2 @@
 
-export { AuthCheck } from './AuthCheck'
+export { AuthContext } from './AuthContext'

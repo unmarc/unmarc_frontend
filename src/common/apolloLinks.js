@@ -1,16 +1,17 @@
 import { setContext } from 'apollo-link-context'
+import { onError } from "apollo-link-error";
 import { createHttpLink } from 'apollo-link-http'
 import Cookies from 'js-cookie'
 import { authContext } from '../auth/authService'
 
 
 export const httpLink = createHttpLink({
-  uri: '/gql-pub',
+  uri: '/gql-pub/',
   credentials: 'same-origin'
 })
 
 export const staffHttpLink = createHttpLink({
-  uri: '/gql-pvt',
+  uri: '/gql-pvt/',
   credentials: 'same-origin'
 })
 
@@ -24,13 +25,8 @@ export const csrfHeaderLink = setContext((_, { headers }) => {
   }
 })
 
-export const authLink = setContext((_, { headers }) => {
-  if (!authContext.hasTokens) return { headers }
-
-  return {
-    headers: {
-      ...headers,
-      'Authorization': `JWT ${authContext.accessToken}`
-    }
+export const createErrorLink = (callbackFn) =>
+  onError(({ networkError }) => {
+    if (networkError.statusCode === 403) callbackFn()
   }
-})
+);

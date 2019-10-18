@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 
-import { AuthCheck } from '../auth/'
+import { AuthContext } from '../auth/'
+import authService from '../auth/authService'
 
 
 const TP_QUERY = gql`
@@ -16,27 +17,38 @@ const TP_QUERY = gql`
 `
 
 function Ops() {
+  const authContext = useContext(AuthContext)
+
+  const logout = () => {
+    authContext.setIsLoggedIn(false)
+    authService.logout()
+  }
+
   return (
-    <AuthCheck>
       <div>
         <h1>Staff Operations</h1>
-        <Query query={ TP_QUERY } fetchPolicy='no-cache'>
+        <Query query={ TP_QUERY } fetchPolicy='no-cache' errorPolicy='all'>
           {
             ({ loading, error, data }) => {
               if (loading) return <div>Fetching</div>
               if (error) {
-                console.error(error)
-                return <div>Error</div>
+                return <div>
+                  <pre>{`${error}`}</pre>
+                </div>
               }
 
               const { me } = data
-              return <p>{ me.id }, { me.username }</p>
+              return <div>
+                <p>
+                  { me.id }, { me.username }
+                </p>
+                <button onClick={ logout }>Log Out</button>
+              </div>
             }
           }
         </Query>
         <Link to='/'>Home</Link>
       </div>
-    </AuthCheck>
   )
 }
 
