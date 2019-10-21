@@ -20,7 +20,7 @@ class AuthService {
       successCallback && successCallback()
     }
     catch (error) {
-      console.log(error)
+      console.error(error)
       errCallback && errCallback(error)
     }
   }
@@ -40,8 +40,9 @@ class AuthService {
       catch (e) {}
     }
     catch (error) {
-      console.log(error)
+      console.error(error)
     }
+
   }
 }
 

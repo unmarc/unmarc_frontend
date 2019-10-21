@@ -2,7 +2,6 @@ import { setContext } from 'apollo-link-context'
 import { onError } from "apollo-link-error";
 import { createHttpLink } from 'apollo-link-http'
 import Cookies from 'js-cookie'
-import { authContext } from '../auth/authService'
 
 
 export const httpLink = createHttpLink({
@@ -26,7 +25,8 @@ export const csrfHeaderLink = setContext((_, { headers }) => {
 })
 
 export const createErrorLink = (callbackFn) =>
+  // When 403 Forbidden received since this app is entirely logged-in only
   onError(({ networkError }) => {
     if (networkError.statusCode === 403) callbackFn()
   }
-);
+)
