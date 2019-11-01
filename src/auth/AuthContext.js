@@ -1,7 +1,8 @@
 import React from 'react'
 
 const shape = {
-  userInfo: {}
+  userInfo: {},
+  logout: () => {},
 }
 
 export const AuthContext = React.createContext(shape)

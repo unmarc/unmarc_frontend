@@ -1,78 +1,74 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { ApolloProvider } from 'react-apollo'
 import { BrowserRouter } from 'react-router-dom'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { from } from 'apollo-link'
 import gql from 'graphql-tag'
+import isNil from 'lodash.isnil'
 import isEmpty from 'lodash.isempty'
 
 import { staffHttpLink, csrfHeaderLink, createErrorLink } from '../common/apolloLinks'
 import Login from '../auth/Login'
-import authService from '../auth/authService'
 import { AuthContext } from '../auth'
 import { Routes } from './routes'
+import { useAuthState } from './hooks'
 
 
-const USERPROFILE_QUERY = gql`
-  query {
-    me {
-      username
-      name
-    }
-  }
-`
+let apolloClient = null;
 
-function App() {
-  /* set to `true` by default. We don't know if previous session exists
-   * because httponly cookie. If not logged in, fail when fetching user info
-   */
-  const [isLoggedIn, setIsLoggedIn] = useState(true)
-
-  const [userInfo, setUserInfo] = useState({})
-
-  if (!isLoggedIn)
-    // will arrive here only if isLoggedIn becomes `false`
-    // when fetching user info or for some reason later
-    return <Login onSuccess={ () => setIsLoggedIn(true) }/>
-
-  const authState = {
-    userInfo,
-    logout: () => {
-      setIsLoggedIn(false)
-      authService.logout()
-      setUserInfo({})
-    }
-  }
-
-  const client = new ApolloClient({
+function initApolloClient(onErrorCb) {
+  apolloClient = new ApolloClient({
     link: from([
       csrfHeaderLink,
-      createErrorLink(() => authState.logout()),
+      createErrorLink(onErrorCb),
       staffHttpLink
     ]),
     cache: new InMemoryCache(),
   })
+}
 
-  if (isEmpty(userInfo)) {
-    client.query({
-      // this query will fail if user is not logged in
-      // and isLoggedIn will become `false` because of errorLink
-      query: USERPROFILE_QUERY
-    }).then(({ data }) => setUserInfo(data.me))
+function App() {
+  const [
+    isLoggedIn, userInfo,
+    setIsLoggedIn, setUserInfo,
+    logout, resetAuthState
+  ] = useAuthState()
+
+  if (isNil(apolloClient)) {
+    initApolloClient(() => resetAuthState())
   }
 
+  useEffect(() => {
+    if (isEmpty(userInfo) && isLoggedIn) {
+      apolloClient.query({
+        // this query will fail if user is not logged in
+        // and isLoggedIn will become `false` because of errorLink
+        query: gql`
+        query {
+          me {
+            username
+            name
+          }
+        }
+      `
+      })
+      .then(({ data }) => setUserInfo(data.me))
+      .catch(e => {})
+    }
+  })
+
+  if (!isLoggedIn)
+    return <Login onSuccess={ () => setIsLoggedIn(true) }/>
+
   return (
-    !isEmpty(userInfo) &&
-      // thus we render the app only after
-      // user info has been retrieved
-      <AuthContext.Provider value={ authState }>
-        <ApolloProvider client={ client }>
-          <BrowserRouter>
-            <Routes/>
-          </BrowserRouter>
-        </ApolloProvider>
-      </AuthContext.Provider>
+    <AuthContext.Provider value={ { userInfo, logout } }>
+      <ApolloProvider client={ apolloClient }>
+        <BrowserRouter>
+          <Routes/>
+        </BrowserRouter>
+      </ApolloProvider>
+    </AuthContext.Provider>
   )
 }
 
