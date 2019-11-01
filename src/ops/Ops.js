@@ -1,13 +1,13 @@
 import React from 'react'
 
-import Navbar from '../common/components/Navbar'
+import TopNav from '../common/components/Navbar'
 
 
 function Ops() {
 
   return (
       <div>
-        <Navbar/>
+        <TopNav/>
       </div>
   )
 }

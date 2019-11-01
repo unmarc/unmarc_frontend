@@ -5,21 +5,13 @@ import Button from 'react-bootstrap/Button'
 import { AuthContext } from '../../auth'
 
 
-export default function() {
-
+export default function TopNav() {
   const authContext = useContext(AuthContext)
-
   return (
     <Navbar>
       <Navbar.Collapse className="justify-content-end">
-        <Navbar.Text>
-          { authContext.userInfo.username }
-        </Navbar.Text>
-        <Button
-          onClick={ () => authContext.logout() }
-          variant="link">
-          logout
-        </Button>
+        <Navbar.Text>{ authContext.userInfo.username }</Navbar.Text>
+        <Button onClick={ () => authContext.logout() } variant="link">logout</Button>
       </Navbar.Collapse>
     </Navbar>
   )
