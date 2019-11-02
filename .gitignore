@@ -23,3 +23,10 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea/
+
+# cypress
+cypress/fixtures/example.json
+cypress/fixtures/profile.json
+cypress/fixtures/users.json
+cypress/integration/examples
+cypress/screenshots/All\ Specs/my-image.png
