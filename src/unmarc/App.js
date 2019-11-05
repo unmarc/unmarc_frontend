@@ -1,75 +1,51 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { ApolloProvider } from 'react-apollo'
-import { BrowserRouter } from 'react-router-dom'
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { from } from 'apollo-link'
-import gql from 'graphql-tag'
 import isNil from 'lodash.isnil'
-import isEmpty from 'lodash.isempty'
 
-import { staffHttpLink, csrfHeaderLink, createErrorLink } from '../common/apolloLinks'
+import { httpLink, csrfHeaderLink, createErrorLink } from '../common/apolloLinks'
 import Login from '../auth/Login'
 import { AuthContext } from '../auth'
 import { Routes } from './routes'
-import { useAuthState } from './hooks'
+import { useAuth } from './hooks'
 
 
 let apolloClient = null;
 
-function initApolloClient(onErrorCb) {
-  apolloClient = new ApolloClient({
-    link: from([
-      csrfHeaderLink,
-      createErrorLink(onErrorCb),
-      staffHttpLink
-    ]),
-    cache: new InMemoryCache(),
-  })
+function initApolloClient(on403Error) {
+    apolloClient = new ApolloClient({
+        link: from([
+            csrfHeaderLink,
+            createErrorLink(on403Error),
+            httpLink
+        ]),
+        cache: new InMemoryCache(),
+    })
 }
 
 function App() {
-  const [
-    isLoggedIn, userInfo,
-    setIsLoggedIn, setUserInfo,
-    logout, resetAuthState
-  ] = useAuthState()
+    const { authState, userInfo, setIsLoggedIn, logout, resetUserSession } = useAuth(apolloClient)
 
-  if (isNil(apolloClient)) {
-    initApolloClient(() => resetAuthState())
-  }
+    if (isNil(apolloClient)) initApolloClient(resetUserSession)
 
-  useEffect(() => {
-    if (isEmpty(userInfo) && isLoggedIn) {
-      apolloClient.query({
-        // this query will fail if user is not logged in
-        // and isLoggedIn will become `false` because of errorLink
-        query: gql`
-          query {
-            me {
-              username
-              name
-            }
-          }
-        `
-      })
-      .then(({ data }) => setUserInfo(data.me))
-      .catch(e => {})
+    if (authState.isInitializing) {
+        if (authState.networkError)
+            return <h2>Could not connect to server</h2>
+        return <h2>Starting...</h2>
     }
-  })
 
-  if (!isLoggedIn)
-    return <Login onSuccess={ () => setIsLoggedIn(true) }/>
-
-  return (
-    <AuthContext.Provider value={ { userInfo, logout } }>
-      <ApolloProvider client={ apolloClient }>
-        <BrowserRouter>
-          <Routes/>
-        </BrowserRouter>
-      </ApolloProvider>
-    </AuthContext.Provider>
-  )
+    return (
+      authState.isLoggedIn ?
+        <AuthContext.Provider value={ { userInfo, logout } }>
+            <ApolloProvider client={ apolloClient }>
+                <Routes/>
+            </ApolloProvider>
+        </AuthContext.Provider>
+        :
+        <Login onSuccess={ () => setIsLoggedIn(true) }/>
+    )
 }
 
 export default App

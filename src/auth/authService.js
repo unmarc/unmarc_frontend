@@ -1,49 +1,46 @@
+import gql from 'graphql-tag'
 import Cookies from 'js-cookie'
 
 
+const USER_PROFILE_QUERY = gql`
+    query {
+      me {
+        username
+        name
+      }
+    }
+`
+
 class AuthService {
-
-  async login(username, password, successCallback, errCallback) {
-    try {
-      const response = await fetch('/login/', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/x-www-form-urlencoded',
-          'X-CSRFToken': Cookies.get('csrftoken')
-        },
-        body: `username=${username}&password=${password}`
-      });
-      try {
-        await response.json()
-      }
-      catch (e) {}
-      successCallback && successCallback()
-    }
-    catch (error) {
-      console.error(error)
-      errCallback && errCallback(error)
-    }
-  }
-
-  async logout() {
-    try {
-      const response = await fetch('/logout/', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/x-www-form-urlencoded',
-          'X-CSRFToken': Cookies.get('csrftoken')
-        }
-      });
-      try {
-        await response.json()
-      }
-      catch (e) {}
-    }
-    catch (error) {
-      console.error(error)
+    login(username, password) {
+        return fetch('/login/', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': Cookies.get('csrftoken')
+            },
+            body: `username=${username}&password=${password}`
+        });
     }
 
-  }
+    logout() {
+        return fetch('/logout/', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': Cookies.get('csrftoken')
+            }
+        });
+    }
+
+    fetchUserInfo(apolloClient, onSuccess) {
+        apolloClient.query({
+            query: USER_PROFILE_QUERY,
+            fetchPolicy: 'no-cache'
+        })
+          .then(({ data }) => onSuccess(data.me))
+          .catch()
+    }
 }
 
 const authService = new AuthService()
