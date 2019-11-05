@@ -10,6 +10,7 @@ import Login from '../auth/Login'
 import { AuthContext } from '../auth'
 import { Routes } from './routes'
 import { useAuth } from './hooks'
+import { JumbotronXYCentered } from '../common/components/JumbotronXYCentered'
 
 
 let apolloClient = null;
@@ -32,8 +33,8 @@ function App() {
 
     if (authState.isInitializing) {
         if (authState.networkError)
-            return <h2>Could not connect to server</h2>
-        return <h2>Starting...</h2>
+            return <JumbotronXYCentered>Could not connect to server</JumbotronXYCentered>
+        return <JumbotronXYCentered>Starting...</JumbotronXYCentered>
     }
 
     return (

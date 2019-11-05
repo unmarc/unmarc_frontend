@@ -20,3 +20,23 @@ code {
 .full-viewport-height {
   height: 100vh;
 }
+
+.full-centered-parent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.full-centered-parent-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#login-box {
+  width: 360px;
+  padding: 2em;
+  background-color: #eef0f3;
+  text-align: center;
+}
