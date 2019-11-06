@@ -18,7 +18,7 @@ export function useAuth(apolloClient) {
     const setIsLoggedIn = bool =>
       setAuthState(prevState => ({ ...prevState, isLoggedIn: bool }))
 
-    const setFetchError = bool =>
+    const setNetworkError = bool =>
       setAuthState(prevState => ({ ...prevState, networkError: bool }))
 
     const setUserInfo = infoObj => {
@@ -42,7 +42,7 @@ export function useAuth(apolloClient) {
 
     const handleFetchError = error => {
         console.error(error.message)
-        setFetchError(true)
+        setNetworkError(true)
     }
 
     const fetchAuthStatus = () =>

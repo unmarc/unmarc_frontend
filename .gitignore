@@ -29,4 +29,5 @@ cypress/fixtures/example.json
 cypress/fixtures/profile.json
 cypress/fixtures/users.json
 cypress/integration/examples
-cypress/screenshots/All\ Specs/my-image.png
+cypress/screenshots/
+cypress/videos/

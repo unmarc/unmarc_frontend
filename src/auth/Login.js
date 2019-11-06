@@ -32,29 +32,43 @@ export default function Login(props) {
 
     return (
       <JumbotronXYCentered>
-          <div id="login-box" className="border rounded full-centered-parent-vertical">
-              <h5>Librarian Console</h5>
+          <div
+            id="login-box"
+            className="border rounded full-centered-parent-vertical"
+          >
+              <h6>Staff</h6>
               <br/>
-              <Form id="login-form" onSubmit={ login } className="full-centered-parent-vertical w-100">
+              <Form
+                id="login-form"
+                onSubmit={ login }
+                className="full-centered-parent-vertical w-100"
+              >
                   <Form.Group className="w-100">
                       <Form.Control
                         onChange={ e => setUsername(e.target.value) }
                         type="text"
-                        placeholder="Username: "
+                        name="username"
+                        placeholder="Username"
                       />
                   </Form.Group>
                   <Form.Group className="w-100">
                       <Form.Control
                         onChange={ e => setPassword(e.target.value) }
                         type="password"
-                        placeholder="Password: "
+                        name="password"
+                        placeholder="Password"
                       />
                   </Form.Group>
-                  <Form.Group style={{ color: 'red' }} className="w-100 text-center">
+                  <Form.Group
+                    className="w-100 text-center"
+                    style={{ color: 'red', fontSize: 'small' }}
+                  >
                       { authError }
                   </Form.Group>
                   <Form.Group>
-                      <Button variant="primary" type="submit">Log In</Button>
+                      <Button variant="primary" type="submit">
+                          Login
+                      </Button>
                   </Form.Group>
               </Form>
           </div>

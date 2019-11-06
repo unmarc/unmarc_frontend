@@ -12,3 +12,6 @@ ReactDOM.render(
   </BrowserRouter>
   , document.getElementById('root')
 );
+
+if (process.env.NODE_ENV !== 'production')
+    require('whatwg-fetch')
