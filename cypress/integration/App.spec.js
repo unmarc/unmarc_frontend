@@ -7,8 +7,7 @@ const returnUserISLoggedIn = () => ({ userIsLoggedIn: true })
 context('App', () => {
     beforeEach(() => {
         cy.server()
-        cy.route('HEAD', '/_h/', () => ({})).as('getCsrf')
-        cy.visit('/')
+        cy.route('HEAD', '/_h/', () => ({}))
     })
 
     context('On startup', () => {
@@ -54,24 +53,6 @@ context('App', () => {
     })
 
     context('Authentication', () => {
-        it('should login successfully with correct credentials', () => {
-            cy.route(authStatusUrl, returnUserNotLoggedIn)
-              .as('getAuthStatus')
-
-            cy.route({
-                method: 'POST',
-                url: '/login/',
-                status: 200,
-                response: {}
-            }).as('postLogin')
-
-            cy.visit('/')
-            cy.get('input[name=username]').type('foo')
-            cy.get('input[name=password]').type('bar')
-            cy.get('form').submit()
-            cy.wait('@postLogin')
-            cy.get('nav').should('contain', 'logout')
-        })
 
         it('show appropriate error if wrong credentials', () => {
             cy.route(authStatusUrl, returnUserNotLoggedIn)
@@ -109,6 +90,25 @@ context('App', () => {
             cy.get('form').submit()
             cy.wait('@failedLogin')
             cy.get('form').should('contain', 'Oops... something didn\'t go as expected')
+        })
+
+        it('should login successfully with correct credentials', () => {
+            cy.route(authStatusUrl, returnUserNotLoggedIn)
+              .as('getAuthStatus')
+
+            cy.route({
+                method: 'POST',
+                url: '/login/',
+                status: 200,
+                response: {}
+            }).as('postLogin')
+
+            cy.visit('/')
+            cy.get('input[name=username]').type('foo')
+            cy.get('input[name=password]').type('bar')
+            cy.get('form').submit()
+            cy.wait('@postLogin')
+            cy.get('nav').should('contain', 'logout')
         })
 
     })

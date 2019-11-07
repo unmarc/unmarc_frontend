@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 
 import './index.css'
 import App from './unmarc'
+import { isDevEnv } from './common/constants'
 
 
 ReactDOM.render(
@@ -13,5 +14,4 @@ ReactDOM.render(
   , document.getElementById('root')
 );
 
-if (process.env.NODE_ENV !== 'production')
-    require('whatwg-fetch')
+if (process.env.NODE_ENV !== 'production' || !isDevEnv) require('whatwg-fetch')

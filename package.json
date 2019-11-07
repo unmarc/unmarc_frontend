@@ -21,6 +21,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test_cy": "cypress run --config video=false",
+    "test_all": "CI=true react-scripts test && cypress run --config video=false",
     "eject": "react-scripts eject"
   },
   "proxy": "http://localhost:8000",
