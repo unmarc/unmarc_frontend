@@ -10,6 +10,6 @@ Use `yarn` instead of `npm`
 
 `yarn start` to start dev server (Ensure `unmarc_backend` is running and listening on port `8000`)
 
-`yarn test` to run tests
+`yarn test` to run jest tests
 
-`yarn run cypress run` to run cypress tests
+`yarn test_cy` to run cypress tests
