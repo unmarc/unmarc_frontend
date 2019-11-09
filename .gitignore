@@ -31,3 +31,5 @@ cypress/fixtures/users.json
 cypress/integration/examples
 cypress/screenshots/
 cypress/videos/
+jsconfig.json
+cypress/.eslintrc.json
