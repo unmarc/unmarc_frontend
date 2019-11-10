@@ -30,7 +30,7 @@ context('App', () => {
             cy.get('nav').should('contain', 'logout')
         })
 
-        it("show loading indicator initially", () => {
+        it("shows loading indicator initially", () => {
             cy.route({
                 url: authStatusUrl,
                 delay: 1000,
@@ -40,7 +40,7 @@ context('App', () => {
             cy.get('body').should('contain', 'Starting...')
         })
 
-        it("show appropriate message on fetch/network error", () => {
+        it("shows appropriate message on fetch/network error", () => {
             cy.route({
                 url: authStatusUrl,
                 status: 500,
@@ -54,7 +54,7 @@ context('App', () => {
 
     context('Authentication', () => {
 
-        it('show appropriate error if wrong credentials', () => {
+        it('shows appropriate error if wrong credentials', () => {
             cy.route(authStatusUrl, returnUserNotLoggedIn)
               .as('getAuthStatus')
 
@@ -73,7 +73,7 @@ context('App', () => {
             cy.get('form').should('contain', 'Invalid username/password')
         })
 
-        it('show appropriate error if network/fetch error', () => {
+        it('shows appropriate error if network/fetch error', () => {
             cy.route(authStatusUrl, returnUserNotLoggedIn)
               .as('getAuthStatus')
 
