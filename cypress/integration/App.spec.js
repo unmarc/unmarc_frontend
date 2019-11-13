@@ -12,22 +12,22 @@ context('App', () => {
 
     context('On startup', () => {
 
-        it("should render Login page if previous session doesn't exist", () => {
+        it("should render login page if previous session doesn't exist", () => {
             cy.route(authStatusUrl, returnUserNotLoggedIn)
               .as('getAuthStatus')
 
             cy.visit('/')
             cy.wait('@getAuthStatus')
-            cy.get('button[type="submit"]').should('have.text', 'Login')
+            cy.get('button[type="submit"]').should('have.text', 'Sign In')
         })
 
-        it("should render Private page if previous session exists", () => {
+        it("should render private page if previous session exists", () => {
             cy.route(authStatusUrl, returnUserISLoggedIn)
               .as('getAuthStatus')
 
             cy.visit('/')
             cy.wait('@getAuthStatus')
-            cy.get('nav').should('contain', 'logout')
+            cy.get('nav').should('contain', 'Sign out')
         })
 
         it("shows loading indicator initially", () => {
@@ -108,7 +108,7 @@ context('App', () => {
             cy.get('input[name=password]').type('bar')
             cy.get('form').submit()
             cy.wait('@postLogin')
-            cy.get('nav').should('contain', 'logout')
+            cy.get('nav').should('contain', 'Sign out')
         })
 
     })

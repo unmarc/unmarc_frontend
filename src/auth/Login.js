@@ -67,7 +67,7 @@ export default function Login(props) {
                   </Form.Group>
                   <Form.Group>
                       <Button variant="primary" type="submit">
-                          Login
+                          Sign In
                       </Button>
                   </Form.Group>
               </Form>

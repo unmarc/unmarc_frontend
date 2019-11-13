@@ -7,6 +7,7 @@ const USER_PROFILE_QUERY = gql`
       me {
         username
         name
+        isLibraryAdmin
       }
     }
 `
