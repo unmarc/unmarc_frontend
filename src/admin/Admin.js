@@ -1,9 +1,11 @@
 import React from 'react'
+import Layout from '../common/components/Layout'
+
 
 export function Admin() {
     return (
-      <div>
+      <Layout>
           <h1>Admin</h1>
-      </div>
+      </Layout>
     )
 }

@@ -1,11 +1,9 @@
 import React from 'react'
-import TopNav from './TopNav'
+import Layout from './Layout'
 
 
 export function Home() {
-  return (
-    <div>
-      <TopNav/>
-    </div>
-  )
+    return (
+      <Layout />
+    )
 }
