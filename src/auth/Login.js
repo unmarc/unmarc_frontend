@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 
 import authService from './authService'
-import { JumbotronXYCentered } from '../common/components/JumbotronXYCentered'
+import { FullCenteredJumbo } from '../common/components/FullCenteredJumbo'
 
 
 export default function Login(props) {
@@ -31,7 +31,7 @@ export default function Login(props) {
     }
 
     return (
-      <JumbotronXYCentered>
+      <FullCenteredJumbo>
           <div
             id="login-box"
             className="border rounded full-centered-parent-vertical"
@@ -72,6 +72,6 @@ export default function Login(props) {
                   </Form.Group>
               </Form>
           </div>
-      </JumbotronXYCentered>
+      </FullCenteredJumbo>
     )
 }

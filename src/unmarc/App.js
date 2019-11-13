@@ -10,16 +10,16 @@ import Login from '../auth/Login'
 import { AuthContext } from '../auth'
 import { Routes } from './routes'
 import { useAuth } from './hooks'
-import { JumbotronXYCentered } from '../common/components/JumbotronXYCentered'
+import { inCenteredJumbo } from '../common/components/FullCenteredJumbo'
 
 
 let apolloClient = null;
 
-function initApolloClient(on403Error) {
+function initApolloClient(on403ErrorFn) {
     apolloClient = new ApolloClient({
         link: from([
             csrfHeaderLink,
-            createErrorLink(on403Error),
+            createErrorLink(on403ErrorFn),
             httpLink
         ]),
         cache: new InMemoryCache(),
@@ -33,8 +33,8 @@ function App() {
 
     if (authState.isInitializing) {
         if (authState.networkError)
-            return <JumbotronXYCentered>Could not connect to server</JumbotronXYCentered>
-        return <JumbotronXYCentered>Starting...</JumbotronXYCentered>
+            return inCenteredJumbo("Could not connect to server")
+        return inCenteredJumbo("Starting...")
     }
 
     return (
