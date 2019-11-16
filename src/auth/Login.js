@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 
 import authService from './authService'
-import { FullCenteredJumbo } from '../common/components/FullCenteredJumbo'
+import FullCenteredJumbo from '../common/components/FullCenteredJumbo'
 
 
 export default function Login(props) {

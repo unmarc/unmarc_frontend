@@ -13,3 +13,7 @@ export default function Layout({ children }) {
       </Container>
     )
 }
+
+export function wrapLayout(content) {
+    return <Layout children={content} />
+}

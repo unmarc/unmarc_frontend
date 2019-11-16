@@ -1,9 +1,12 @@
 import React from 'react'
-import Layout from './Layout'
+import { wrapLayout } from './Layout'
+import FullCenteredJumbo from './FullCenteredJumbo'
 
 
 export function Home() {
-    return (
-      <Layout />
+    return wrapLayout(
+      <FullCenteredJumbo>
+          <h2>Home</h2>
+      </FullCenteredJumbo>
     )
 }
