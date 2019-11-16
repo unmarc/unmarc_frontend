@@ -1,0 +1,12 @@
+.height-60p {
+  min-height: 60%;
+}
+
+.width-90p {
+  width: 90%;
+}
+
+.grid-box {
+  width: 100%;
+  height: 100%;
+}

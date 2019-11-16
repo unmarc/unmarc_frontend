@@ -22,7 +22,7 @@ export default function TopNav() {
               &nbsp;&nbsp;&nbsp;&nbsp;
               <Nav.Item>
                   <DropdownButton
-                    title={ authContext.userInfo.name }
+                    title={ authContext.userInfo.name || '' }
                     variant='light'
                     id='#userDropDown'
                   >

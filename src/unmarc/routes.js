@@ -1,14 +1,22 @@
 import React from 'react'
-import { Route } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import { Home } from '../common/components'
-import { Admin } from '../admin/Admin'
+import Admin from '../admin/Admin'
+import StaffAdmin from '../admin/StaffAdmin'
 
 export function Routes() {
   return (
-    <>
-      <Route exact path='/' component={ Home }/>
-      <Route exact path='/admin' component={ Admin }/>
-    </>
+    <Switch>
+        <Route exact path='/'>
+            <Home />
+        </Route>
+        <Route exact path='/admin'>
+            <Admin />
+        </Route>
+        <Route exact path='/admin/staff'>
+            <StaffAdmin />
+        </Route>
+    </Switch>
   )
 }
