@@ -21,7 +21,10 @@ export const csrfHeaderLink = setContext((_, { headers }) => {
 
 export const createErrorLink = (on403Callback) =>
   // When 403 Forbidden received since this app is entirely logged-in only
-  onError(({ networkError }) => {
-        if (networkError.statusCode === 403) on403Callback()
+  onError(({ graphQLErrors, networkError }) => {
+        if (networkError && networkError.statusCode === 403) on403Callback()
+        if (graphQLErrors) {
+            graphQLErrors.map(error => console.error(error.message))
+        }
     }
   )
